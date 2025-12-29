@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySync | Community</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #a1c4fd, #fbc2eb);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    /* ================= NAVBAR ================= */
+    .navbar {
+      background-color: #4e66ff;
+      padding: 1rem 2rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .profile-icon {
+      cursor: pointer;
+      background: white;
+      color: #4e66ff;
+      padding: 6px 10px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+    }
+
+    /* ================= PROFILE POPUP ================= */
+    .profile-box {
+      display: none;
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      background: white;
+      padding: 15px;
+      width: 220px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .profile-box button {
+      width: 100%;
+      padding: 8px;
+      background: #ff4ecd;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    /* ================= COMMUNITY CONTAINER ================= */
+    .community-container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .ask-box {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 15px;
+      margin-bottom: 24px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .ask-box textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      resize: none;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .ask-box textarea:focus {
+      outline: none;
+      box-shadow: 0 0 6px rgba(78,102,255,0.5);
+      border-color: #4e66ff;
+    }
+
+    .ask-box button {
+      margin-top: 10px;
+      background: #4e66ff;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .ask-box button:hover {
+      background: #3b50d3;
+      transform: scale(1.03);
+    }
+
+    .question-card {
+      background: #f9f9f9;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .question-card h4 {
+      margin-bottom: 6px;
+      color: #4e66ff;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 12px;
+      margin-right: 6px;
+    }
+
+    .empty-state {
+      text-align: center;
+      margin-top: 40px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <h2 class="brand">StudySync</h2>
+    <div>
+      <a href="index.html">Home</a>
+      <span class="profile-icon" onclick="toggleProfile()">👤</span>
+    </div>
+  </nav>
+
+  <!-- PROFILE POPUP -->
+  <div id="profileBox" class="profile-box hidden">
+    <h3>Your Profile</h3>
+    <p><strong>Name:</strong> <span id="profileName"></span></p>
+    <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- COMMUNITY -->
+  <div class="community-container">
+    <h2>Community Doubts 💬</h2>
+    <p>Ask questions, help others, and learn together.</p>
+
+    <!-- Ask Question Box -->
+    <div class="ask-box">
+      <textarea id="questionInput" placeholder="Ask your doubt here..."></textarea>
+      <button onclick="postQuestion()">Post Question</button>
+    </div>
+
+    <!-- Questions List -->
+    <div id="questionsList"></div>
+
+    <div id="emptyState" class="empty-state hidden">
+      <p>No questions yet for your interests 🤔</p>
+      <p>Be the first to ask!</p>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="profile.js"></script>
+  <script>
+    const user = JSON.parse(localStorage.getItem("studysyncUser"));
+    const prefs = JSON.parse(localStorage.getItem("studysync-prefs"));
+
+    const questionsList = document.getElementById("questionsList");
+    const emptyState = document.getElementById("emptyState");
+
+    // Dummy community questions
+    const communityQuestions = [
+      { user: "Aman", question: "How to solve integration by parts easily?", tags: ["Maths"] },
+      { user: "Riya", question: "Best way to revise OS before exams?", tags: ["Computer Science"] },
+      { user: "Sarthak", question: "Is AI replacing software developers?", tags: ["AI / ML", "Tech News"] }
+    ];
+
+    function loadQuestions() {
+      questionsList.innerHTML = "";
+
+      let filtered = communityQuestions;
+
+      if (prefs && prefs.interests.length > 0) {
+        filtered = communityQuestions.filter(q =>
+          q.tags.some(tag => prefs.interests.includes(tag))
+        );
+      }
+
+      if (filtered.length === 0) {
+        emptyState.classList.remove("hidden");
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+
+      filtered.forEach(q => {
+        const div = document.createElement("div");
+        div.className = "question-card";
+
+        div.innerHTML = `
+          <h4>${q.question}</h4>
+          <p>Asked by <strong>${q.user}</strong></p>
+          ${q.tags.map(t => `<span class="tag">${t}</span>`).join("")}
+        `;
+
+        questionsList.appendChild(div);
+      });
+    }
+
+    function postQuestion() {
+      const input = document.getElementById("questionInput");
+      const text = input.value.trim();
+
+      if (!text) {
+        alert("Please enter a question");
+        return;
+      }
+
+      communityQuestions.unshift({
+        user: user?.username || "Student",
+        question: text,
+        tags: prefs?.interests || ["General"]
+      });
+
+      input.value = "";
+      loadQuestions();
+    }
+
+    function toggleProfile() {
+      const box = document.getElementById("profileBox");
+      box.classList.toggle("hidden");
+    }
+
+    function logout() {
+      localStorage.removeItem("studysyncUser");
+      localStorage.removeItem("studysync-prefs");
+      location.reload();
+    }
+
+    loadQuestions();
+  </script>
+
+</body>
+</html>

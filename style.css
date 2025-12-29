@@ -1,0 +1,200 @@
+/* ================= BODY ================= */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #a1c4fd, #fbc2eb);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ================= LOGO / BRAND ================= */
+.brand {
+  font-family: 'Tagesschrift', sans-serif; /* New font */
+  font-weight: 600;
+  font-size: 2rem;
+  color: #0127ff;
+  display: inline-block;
+  letter-spacing: 1px;
+  animation: pulseColor 2.5s infinite;
+}
+
+/* Logo pulse animation */
+@keyframes pulseColor {
+  0% { transform: scale(1); color: #2003b0; }
+  50% { transform: scale(1.1); color: #b41c5e; }
+  100% { transform: scale(1); color: #df87c6; }
+}
+
+/* ================= HERO ================= */
+.hero {
+  text-align: center;
+  padding: 100px 20px;
+  color: #333;
+}
+
+.hero h1 {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* ================= DASHBOARD CARDS ================= */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  padding-bottom: 60px;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-decoration: none;
+  font-size: 22px;
+  color: black;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: all 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+/* ================= MODAL ================= */
+.hidden {
+  display: none;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+}
+
+.modal {
+  background: white;
+  padding: 35px 25px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.modal input {
+  width: 90%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.modal input:focus {
+  outline: none;
+  border-color: #ff4ecd;
+  box-shadow: 0 0 10px rgba(255, 76, 205, 0.3);
+}
+
+.modal button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  background: #4a90e2;
+  border: none;
+  color: white;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal button:hover {
+  transform: scale(1.03);
+}
+
+button.secondary {
+  background: #ff4ecd;
+}
+
+/* ================= PROFILE ================= */
+.profile-icon {
+  cursor: pointer;
+  background: white;
+  padding: 8px 14px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.profile-icon:hover {
+  transform: scale(1.1);
+}
+
+.profile-box {
+  display: none;
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  background: white;
+  padding: 20px;
+  width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  z-index: 1001;
+}
+
+.profile-box button {
+  width: 100%;
+  padding: 10px;
+  background: #2098c8;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.profile-box button:hover {
+  background: #2a90ee;
+}
+
+/* ================= ERROR MESSAGES ================= */
+.error {
+  color: rgb(227, 19, 192);
+  font-size: 0.85rem;
+  margin: 5px 0;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+  padding: 30px;
+}
+
+/* ================= OPTIONAL: Modal Fade ================= */
+.modal-backdrop.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-backdrop.show {
+  opacity: 1;
+}

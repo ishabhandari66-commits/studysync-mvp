@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Notes - StudySync</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #a1c4fd, #fbc2eb);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .navbar {
+      background-color: #4CAF50;
+      padding: 1rem;
+      color: white;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #4e66ff;
+    }
+
+    textarea, #searchInput {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+      transform: scale(1.03);
+    }
+
+    #notesList {
+      margin-top: 20px;
+    }
+
+    .note-card {
+      background: #f9f9f9;
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .note-card p, .note-card a {
+      word-break: break-word;
+    }
+
+    .note-card a {
+      color: #4e66ff;
+      text-decoration: underline;
+    }
+
+    .note-card iframe {
+      width: 100%;
+      height: 300px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .note-card button {
+      width: auto;
+      align-self: flex-end;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      background-color: #ff4ecd;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .note-card button:hover {
+      background-color: #e33bba;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html">⬅ Home</a>
+  </nav>
+
+  <div class="container">
+    <h1>My Notes</h1>
+
+    <textarea id="noteInput" placeholder="Write a note or paste PDF link"></textarea>
+    <button id="addNoteBtn">Add Note</button>
+
+    <input type="text" id="searchInput" placeholder="Search notes...">
+
+    <div id="notesList"></div>
+  </div>
+
+  <script>
+    const noteInput = document.getElementById("noteInput");
+    const addNoteBtn = document.getElementById("addNoteBtn");
+    const searchInput = document.getElementById("searchInput");
+    const notesList = document.getElementById("notesList");
+
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+    function renderNotes(displayNotes = notes) {
+      notesList.innerHTML = "";
+
+      displayNotes.forEach((note, index) => {
+        const div = document.createElement("div");
+        div.className = "note-card";
+
+        if(note.startsWith("http") && note.endsWith(".pdf")) {
+          // PDF preview
+          div.innerHTML = `
+            <iframe src="${note}"></iframe>
+            <button onclick="deleteNote(${index})">Delete</button>
+          `;
+        } else if(note.startsWith("http")) {
+          // Regular link
+          div.innerHTML = `
+            <a href="${note}" target="_blank">${note}</a>
+            <button onclick="deleteNote(${index})">Delete</button>
+          `;
+        } else {
+          // Plain text note
+          div.innerHTML = `
+            <p>${note}</p>
+            <button onclick="deleteNote(${index})">Delete</button>
+          `;
+        }
+
+        notesList.appendChild(div);
+      });
+    }
+
+    addNoteBtn.onclick = () => {
+      const value = noteInput.value.trim();
+      if (!value) return;
+
+      notes.unshift(value);
+      localStorage.setItem("notes", JSON.stringify(notes));
+      noteInput.value = "";
+      renderNotes();
+    };
+
+    function deleteNote(index) {
+      notes.splice(index, 1);
+      localStorage.setItem("notes", JSON.stringify(notes));
+      renderNotes();
+    }
+
+    searchInput.oninput = () => {
+      const value = searchInput.value.toLowerCase();
+      renderNotes(notes.filter(n => n.toLowerCase().includes(value)));
+    };
+
+    renderNotes();
+  </script>
+</body>
+</html>

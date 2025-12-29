@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySync</title>
+
+  <!-- Google Font for Logo -->
+  <link href="https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap" rel="stylesheet">
+
+  <!-- STYLES -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="navigation.css">
+
+  <style>
+    /* Logo styling */
+    .brand {
+      font-family: 'Tagesschrift', cursive;
+      font-size: 2rem;
+      color: #ff4ecd;
+      font-weight: bold;
+      display: inline-block;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .brand:hover {
+      transform: scale(1.1) rotate(-2deg);
+      color: #4e66ff;
+    }
+
+    /* Hero section styling */
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #555;
+    }
+
+    /* Cards styling */
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      padding-bottom: 40px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-decoration: none;
+      font-size: 22px;
+      color: black;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    /* Modal Styling */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .modal input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .modal button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: #4a90e2;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .modal button:hover {
+      transform: scale(1.03);
+    }
+
+    button.secondary {
+      background: #ff4ecd;
+    }
+
+    /* Hidden class */
+    .hidden {
+      display: none;
+    }
+
+    /* Error text */
+    .error {
+      color: red;
+      font-size: 0.85rem;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= LOGIN / SIGNUP MODAL (3-Step) ================= -->
+  <div id="authModal" class="modal-backdrop">
+    <div class="modal">
+
+      <!-- Step 1: Name & Email -->
+      <div id="step1">
+        <h2>Welcome to <span class="brand">StudySync</span> 👋</h2>
+        <p>Create an account to save your progress</p>
+        <input id="nameInput" type="text" placeholder="Your name (any name)">
+        <input id="emailInput" type="email" placeholder="Email address">
+        <p id="step1Error" class="error"></p>
+        <button id="nextBtn">Next</button>
+      </div>
+
+      <!-- Step 2: OTP Verification -->
+      <div id="step2" class="hidden">
+        <h2>Enter OTP</h2>
+        <p>Check your email for the OTP (MVP: see console)</p>
+        <input id="otpInput" type="text" placeholder="Enter OTP">
+        <p id="step2Error" class="error"></p>
+        <button id="verifyOtpBtn">Verify OTP</button>
+      </div>
+
+      <!-- Step 3: Save Progress / Guest -->
+      <div id="step3" class="hidden">
+        <h2>Almost there!</h2>
+        <p>Do you want to save your progress?</p>
+        <button id="saveBtn">Save Progress</button>
+        <button id="guestBtn">Continue as Guest</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= INTEREST / STUDENT TYPE MODAL ================= -->
+  <div id="interestModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <h2>What kind of student are you today? 🎓</h2>
+      <p>Select your focus to personalize your study feed</p>
+
+      <h4>Choose your mode</h4>
+      <div id="modeContainer" class="chip-container"></div>
+
+      <h4>What do you want to learn?</h4>
+      <div id="interestContainer" class="chip-container"></div>
+
+      <button id="savePrefsBtn">Continue to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- ================= NAVBAR ================= -->
+  <nav class="navbar">
+    <h2 class="brand">StudySync</h2>
+    <div class="profile-icon" onclick="toggleProfile()">👤</div>
+  </nav>
+
+  <!-- ================= PROFILE POPUP ================= -->
+  <div id="profileBox" class="profile-box hidden">
+    <h3>Your Profile</h3>
+    <p><strong>Name:</strong> <span id="profileName"></span></p>
+    <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <!-- ================= HERO SECTION ================= -->
+  <section class="hero">
+    <h1>Organize. Learn. Grow.</h1>
+    <p>Your personalized study dashboard</p>
+  </section>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="cards dashboard">
+    <a href="notes.html" class="card">📒 Notes</a>
+    <a href="reel.html" class="card">🎞️ Reels</a>
+    <a href="community.html" class="card">💬 Community</a>
+    <a href="ai.html" class="card">🤖 Ask AI</a>
+  </section>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="auth.js"></script>
+  <script src="script.js"></script>
+  <script src="profile.js"></script>
+
+</body>
+</html>
